@@ -10,41 +10,44 @@ class App extends Component {
     super(); // super calls Component's constructor method
 
     this.state = { // this.state is always a json object
-      name: {firstName: 'Booboo', lastName: 'Doodoo'},
-      company: 'Your Face'
-    }
+      // showing how you can hard code state, but you'll pretty much always get your data from an api
+      monsters: [
+        {
+          name: 'Linda',
+          id: '1'
+        },
+        {
+          name: 'Frank',
+          id: '2',
+        },
+        {
+          name: 'Jacky',
+          id: '3',
+        },
+        {
+          name: 'Molly',
+          id: '4',
+        }
+      ]
+    };
   }
   
   render(){
-    // when react looks through the html and sees {}, it knows we want to access a js variable
-    // whenever one of these variables change, react will re render this chunk of code that the variable is in
-    
-    // react lets you bind event handlers onto any html element
-    // react updates the object when state is a completely different object in memory
-    // if you just update a value in the current object, it wont re render
-    // the set state method creates a new object with updated value(s) so that react knows to re render
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>Hi {this.state.name.firstName} {this.state.name.lastName}, I work at {this.state.company}</p> 
-          <button 
-            onClick={() => {
-              this.setState(
-                (state, props) => {
-                  return {
-                    name: {firstName: 'Molly', lastName: 'Novash'},
-                  };
-                },
-                () => {
-                  console.log(this.state);
-                }
-              );
-          }}
-        >
-          Change Name
-          </button>
-        </header>
+        {
+          // .map iterates over your array and gives you back a new array
+          // rn we have an array of json objects, we want an array of html elements with the monsters names
+          // for .map parameters, you give it a callback function where the callback functions parameter has an array element
+          // then .map iterates through and invokes your function on each element 
+          this.state.monsters.map((monster) => {
+            return (
+              <div key={monster.id}>
+                <h1>{monster.name}</h1>
+              </div>
+            );
+          })
+        }
       </div>
     );
   }
