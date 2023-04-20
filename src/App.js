@@ -1,5 +1,8 @@
 import { Component } from 'react';
 
+import CardList from './components/card-list/card-list.component';
+import SearchBox from './components/search-box/search-box.component';
+
 import logo from './logo.svg';
 import './App.css';
 
@@ -10,44 +13,55 @@ class App extends Component {
     super(); // super calls Component's constructor method
 
     this.state = { // this.state is always a json object
-      // showing how you can hard code state, but you'll pretty much always get your data from an api
-      monsters: [
-        {
-          name: 'Linda',
-          id: '1'
-        },
-        {
-          name: 'Frank',
-          id: '2',
-        },
-        {
-          name: 'Jacky',
-          id: '3',
-        },
-        {
-          name: 'Molly',
-          id: '4',
-        }
-      ]
+      monsters: [],
+      searchField: ''
     };
+    //console.log('constructor');
+  }
+
+  // this is a method from the Component class that gets run when a component mounts
+  // mounting is the first time a component gets rendered to the DOM. it only happens once
+  // the only way a component can get remounted, is if it's first unmounted, ie completely removed from the DOM
+  // at that point, its basically a different component ie a new instance of it
+
+  // the moment a component gets mounted onto the dom is when you want to make an api request,
+  // because you want it to display all of the data right away
+  componentDidMount() {
+    // console.log('component did mount');
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then((response) => response.json())
+      .then((users) => this.setState(() => {
+        return {monsters: users}
+      },
+      () => {
+        // console.log(this.state);
+      }
+      ));
+  }
+
+  onSearchChange = (event) => {
+    const searchField = event.target.value.toLowerCase();
+    this.setState(() => {
+      return { searchField };
+    });
   }
   
   render(){
+    const { monsters, searchField } = this.state;
+    const { onSearchChange } = this;
+
+    const filteredMonsters = monsters.filter((monster) => {
+      return monster.name.toLowerCase().includes(searchField);
+    })
+
     return (
       <div className="App">
-        {
-          // .map iterates over your array and gives you back a new array
-          // rn we have an array of json objects, we want an array of html elements with the monsters names
-          // for .map parameters, you give it a callback function where the callback functions parameter has an array element
-          // then .map iterates through and invokes your function on each element 
-          this.state.monsters.map((monster) => {
-            return (
-              <div key={monster.id}>
-                <h1>{monster.name}</h1>
-              </div>
-            );
-          })
-        }
+        <SearchBox 
+          onChangeHandler={onSearchChange} 
+          placeholder='search monsters'
+          className='search-box'
+        />
+        <CardList monsters={filteredMonsters}/>
       </div>
     );
   }
